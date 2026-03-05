@@ -1,0 +1,14 @@
+// nombre de relations créées
+MATCH ()-[r:A_CONSTATE]->()
+RETURN count(r);
+
+// total par année
+MATCH ()-[r:A_CONSTATE]->()
+RETURN r.annee, SUM(r.nb_faits)
+ORDER BY r.annee;
+
+// comparaison Police / Gendarmerie
+MATCH (s:Service)-[:APPARTIENT_A]->(f:Force),
+      (s)-[r:A_CONSTATE]->(i:Infraction)
+RETURN f.code, i.libelle, SUM(r.nb_faits) AS total
+ORDER BY total DESC;
