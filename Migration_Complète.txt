@@ -1,0 +1,161 @@
+// Nettoyage de la base (optionnel si base vide)
+MATCH (n) DETACH DELETE n;
+
+// ----------------------------
+// CREATION DES NOEUDS
+// ----------------------------
+
+// Forces (PN / GN)
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH DISTINCT row.service AS f
+MERGE (:Force {code: f});
+
+// Départements
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH DISTINCT row.departement AS dep
+MERGE (:Departement {code: dep});
+
+// Périmètres
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH DISTINCT row.perimetre AS p
+WHERE p IS NOT NULL AND trim(p) <> ""
+MERGE (:Perimetre {code: p});
+
+// Services
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH DISTINCT row.unite AS u
+MERGE (:Service {nom: trim(u)});
+
+// Infractions
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH DISTINCT row.code_index AS code, row.libelle_index AS lib
+MERGE (:Infraction {
+    code_index: toInteger(code),
+    libelle: lib
+});
+
+// ----------------------------
+// CREATION DES RELATIONS
+// ----------------------------
+
+// Service -> Force
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+MATCH (s:Service {nom: trim(row.unite)})
+MATCH (f:Force {code: row.service})
+MERGE (s)-[:APPARTIENT_A]->(f);
+
+// Service -> Département
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+MATCH (s:Service {nom: trim(row.unite)})
+MATCH (d:Departement {code: row.departement})
+MERGE (s)-[:SITUE_DANS]->(d);
+
+// Service -> Périmètre
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row
+WHERE row.perimetre IS NOT NULL AND trim(row.perimetre) <> ""
+MATCH (s:Service {nom: trim(row.unite)})
+MATCH (p:Perimetre {code: row.perimetre})
+MERGE (s)-[:RELEVE_DE]->(p);
+
+// ----------------------------
+// IMPORT DES FAITS
+// ----------------------------
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2012' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2013' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2014' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2015' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2016' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2017' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2018' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2019' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2020' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
+
+LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
+WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
+WHERE row.annee = '2021' AND nb > 0
+MATCH (u:Service {nom: trim(row.unite)})
+MATCH (i:Infraction {code_index: toInteger(row.code_index)})
+MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
+ON CREATE SET r.nb_faits = toInteger(nb)
+ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
