@@ -1,9 +1,9 @@
 // Nettoyage de la base (optionnel si base vide)
 MATCH (n) DETACH DELETE n;
 
-// ----------------------------
+
 // CREATION DES NOEUDS
-// ----------------------------
+// 
 
 // Forces (PN / GN)
 LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
@@ -34,9 +34,9 @@ MERGE (:Infraction {
     libelle: lib
 });
 
-// ----------------------------
+//
 // CREATION DES RELATIONS
-// ----------------------------
+// 
 
 // Service -> Force
 LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
@@ -58,9 +58,9 @@ MATCH (s:Service {nom: trim(row.unite)})
 MATCH (p:Perimetre {code: row.perimetre})
 MERGE (s)-[:RELEVE_DE]->(p);
 
-// ----------------------------
+// 
 // IMPORT DES FAITS
-// ----------------------------
+// 
 LOAD CSV WITH HEADERS FROM 'file:///BD_SAE_MIGRATON_NO_SQL.csv' AS row
 WITH row, toFloat(replace(replace(trim(row.nb_fait),' ',''),',','.')) AS nb
 WHERE row.annee = '2012' AND nb > 0
@@ -158,4 +158,5 @@ MATCH (i:Infraction {code_index: toInteger(row.code_index)})
 MERGE (u)-[r:A_CONSTATE {annee: 2021}]->(i)
 ON CREATE SET r.nb_faits = toInteger(nb)
 ON MATCH SET r.nb_faits = r.nb_faits + toInteger(nb);
+
 
