@@ -37,9 +37,9 @@ CREATE TABLE Statistique (
     FOREIGN KEY (code_index) REFERENCES Crime(code_index)
 );
 
--- =====================================================
+
 -- 2. Création de la table temporaire pour l'import CSV
--- =====================================================
+
 
 CREATE TABLE temp_import (
     annee INTEGER,
@@ -52,9 +52,9 @@ CREATE TABLE temp_import (
     nb_fait INTEGER
 );
 
--- =====================================================
+
 -- 3. Alimentation des tables à partir de la table temporaire
--- =====================================================
+
 
 -- Insertion des départements
 INSERT INTO Departement(code_departement)
