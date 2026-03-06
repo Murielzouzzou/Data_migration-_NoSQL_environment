@@ -1,0 +1,99 @@
+
+-- 1. Création des tables du modèle relationnel
+
+
+CREATE TABLE Departement (
+    code_departement TEXT PRIMARY KEY
+);
+
+CREATE TABLE Crime (
+    code_index INTEGER PRIMARY KEY,
+    libelle_index TEXT
+);
+
+CREATE TABLE Perimetre (
+    id_perimetre INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom_perimetre TEXT UNIQUE
+);
+
+CREATE TABLE Unite (
+    id_unite INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom_unite TEXT,
+    type_unite TEXT,
+    service TEXT,
+    code_departement TEXT,
+    id_perimetre INTEGER,
+    FOREIGN KEY (code_departement) REFERENCES Departement(code_departement),
+    FOREIGN KEY (id_perimetre) REFERENCES Perimetre(id_perimetre)
+);
+
+CREATE TABLE Statistique (
+    id_stat INTEGER PRIMARY KEY AUTOINCREMENT,
+    annee INTEGER,
+    id_unite INTEGER,
+    code_index INTEGER,
+    nb_fait INTEGER,
+    FOREIGN KEY (id_unite) REFERENCES Unite(id_unite),
+    FOREIGN KEY (code_index) REFERENCES Crime(code_index)
+);
+
+-- =====================================================
+-- 2. Création de la table temporaire pour l'import CSV
+-- =====================================================
+
+CREATE TABLE temp_import (
+    annee INTEGER,
+    service TEXT,
+    departement TEXT,
+    perimetre TEXT,
+    unite TEXT,
+    code_index INTEGER,
+    libelle_index TEXT,
+    nb_fait INTEGER
+);
+
+-- =====================================================
+-- 3. Alimentation des tables à partir de la table temporaire
+-- =====================================================
+
+-- Insertion des départements
+INSERT INTO Departement(code_departement)
+SELECT DISTINCT departement
+FROM temp_import;
+
+-- Insertion des crimes
+INSERT INTO Crime(code_index, libelle_index)
+SELECT DISTINCT code_index, libelle_index
+FROM temp_import;
+
+-- Insertion des périmètres
+INSERT INTO Perimetre(nom_perimetre)
+SELECT DISTINCT perimetre
+FROM temp_import
+WHERE perimetre IS NOT NULL AND perimetre <> '';
+
+-- Insertion des unités
+INSERT INTO Unite(nom_unite, type_unite, service, code_departement, id_perimetre)
+SELECT DISTINCT
+    t.unite,
+    CASE 
+        WHEN t.service = 'PN' THEN 'CSP'
+        ELSE 'CGD'
+    END,
+    t.service,
+    t.departement,
+    p.id_perimetre
+FROM temp_import t
+LEFT JOIN Perimetre p
+ON t.perimetre = p.nom_perimetre;
+
+-- Construction de la table de faits
+INSERT INTO Statistique(annee, id_unite, code_index, nb_fait)
+SELECT
+    t.annee,
+    u.id_unite,
+    t.code_index,
+    t.nb_fait
+FROM temp_import t
+JOIN Unite u
+ON t.unite = u.nom_unite;
