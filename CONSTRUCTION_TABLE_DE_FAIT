@@ -1,0 +1,9 @@
+INSERT INTO Statistique(annee, id_unite, code_index, nb_fait)
+SELECT
+    t.annee,
+    u.id_unite,
+    t.code_index,
+    t.nb_fait
+FROM temp_import t
+JOIN Unite u
+ON t.unite = u.nom_unite;
