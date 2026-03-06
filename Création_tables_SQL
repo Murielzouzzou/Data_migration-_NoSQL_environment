@@ -1,0 +1,51 @@
+-- Table Departement
+CREATE TABLE Departement (
+    code_departement TEXT PRIMARY KEY
+);
+
+-- Table Crime
+CREATE TABLE Crime (
+    code_index INTEGER PRIMARY KEY,
+    libelle_index TEXT
+);
+
+-- Table Perimetre
+CREATE TABLE Perimetre (
+    id_perimetre INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom_perimetre TEXT UNIQUE
+);
+
+-- Table Unite
+CREATE TABLE Unite (
+    id_unite INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom_unite TEXT,
+    type_unite TEXT,
+    service TEXT,
+    code_departement TEXT,
+    id_perimetre INTEGER,
+    FOREIGN KEY(code_departement) REFERENCES Departement(code_departement),
+    FOREIGN KEY(id_perimetre) REFERENCES Perimetre(id_perimetre)
+);
+
+-- Table Statistique (table de faits)
+CREATE TABLE Statistique (
+    id_stat INTEGER PRIMARY KEY AUTOINCREMENT,
+    annee INTEGER,
+    id_unite INTEGER,
+    code_index INTEGER,
+    nb_fait INTEGER,
+    FOREIGN KEY(id_unite) REFERENCES Unite(id_unite),
+    FOREIGN KEY(code_index) REFERENCES Crime(code_index)
+);
+#TABLE TEMPORAIRE 
+
+CREATE TABLE temp_import (
+    annee INTEGER,
+    service TEXT,
+    departement TEXT,
+    perimetre TEXT,
+    unite TEXT,
+    code_index INTEGER,
+    libelle_index TEXT,
+    nb_fait INTEGER
+);
